@@ -292,6 +292,8 @@ df_grouped.rename(columns={'mean': 'co2_flux_mean', 'std': 'co2_flux_std'}, inpl
 # 5. Widget para selección de mes
 meses_ordenados = sorted(df_grouped['mes'].unique(), 
                       key=lambda x: pd.to_datetime(x, format='%B').month)
+if año_seleccionado == 2023 and 'January' in meses_ordenados:
+    meses_ordenados.remove('January')
 mes_seleccionado = st.selectbox("Seleccione el mesprueba:", meses_ordenados)
 
 # 6. Filtrar por mes
