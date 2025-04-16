@@ -1,5 +1,6 @@
 streamlit
 pandas
-requests
-beautifulsoup4
-openpyxl
+numpy
+plotly.express
+plotly.graph_objects
+calendar
