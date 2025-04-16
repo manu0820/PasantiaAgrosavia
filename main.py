@@ -9,11 +9,11 @@ import calendar
 año_seleccionado = st.selectbox("Selecciona el año:", [2023, 2024])
 
 if año_seleccionado == 2023:
-    df_full = pd.read_csv("eddypro_2023_full_output.csv", skiprows=[0, 2], index_col=0)
-    df_biomet = pd.read_csv("eddypro_2023_biomet.csv", skiprows=[1], index_col=0)
+    df_full = pd.read_csv("eddypro_2023_full_output_2025-02-24T092218_exp.csv", skiprows=[0, 2], index_col=0)
+    df_biomet = pd.read_csv("eddypro_2023_biomet_2025-02-24T092218_exp.csv", skiprows=[1], index_col=0)
 else:
-    df_full = pd.read_csv("eddypro_2024_full_output.csv", skiprows=[0, 2], index_col=0)
-    df_biomet = pd.read_csv("eddypro_2024_biomet.csv", skiprows=[1], index_col=0)
+    df_full = pd.read_csv("eddypro_2024_full_output_2025-02-24T162122_exp.csv", skiprows=[0, 2], index_col=0)
+    df_biomet = pd.read_csv("eddypro_2024_biomet_2025-02-24T162122_exp.csv", skiprows=[1], index_col=0)
 
 st.title(f"Resumen estadistico EddyPro - Año {año_seleccionado}")
 
