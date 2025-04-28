@@ -5,7 +5,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 import calendar
 
-##########################
 año_seleccionado = st.selectbox("Selecciona el año:", [2023, 2024])
 
 if año_seleccionado == 2023:
