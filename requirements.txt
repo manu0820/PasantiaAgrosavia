@@ -1,5 +1,5 @@
-streamlit
-pandas
-numpy
+streamlit ==1.32.0
+pandas=1.5.3
+numpy==1.23.5
 plotly
-pycaret == 2.3.10
+pycaret == 3.0.0
