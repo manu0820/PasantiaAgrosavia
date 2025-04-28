@@ -4,6 +4,7 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 import calendar
+import pycaret
 #Pycaret is used to automatomate machine learning workflow
 from pycaret.regression import *
 from pycaret.utils import version
