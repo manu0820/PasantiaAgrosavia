@@ -4,7 +4,9 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 import calendar
-
+#Pycaret is used to automatomate machine learning workflow
+from pycaret.regression import *
+from pycaret.utils import version
 ##########################
 año_seleccionado = st.selectbox("Selecciona el año:", [2023, 2024])
 
@@ -204,9 +206,9 @@ st.dataframe(df_means_sin_outliers)
 
 # Diccionario de nombres y unidades de las variables
 var_info = {
-    "LE_mean": "Balanza de energía latente (W/m²)",
+    "LE_mean": "Balance de energía latente (W/m²)",
     "co2_flux_mean": "Flujo de CO₂ (µmol/s·m²)",
-    "co2_mean": "Concentración de CO₂ (µmol/mol)",
+    "co2_mean_mean": "Concentración de CO₂ (µmol/mol)",
     "h2o_flux_mean": "Flujo de H₂O (mmol/s·m²)",
     "co2_strg_mean": "Almacenamiento de CO₂ (µmol/s·m²)",
     "air_temperature_mean": "Temperatura del aire (°C)",
@@ -221,15 +223,15 @@ var_info = {
     "bowen_ratio_mean": "Razón de Bowen",
     "P_RAIN_1_1_1_sum": "Precipitación acumulada (mm)",
     "RN_1_1_1_mean": "Radiación neta (W/m²)",
-    "SWC_1_1_1_mean": "Humedad del suelo a 5 cm (m³/m³)",
-    "SWC_2_1_1_mean": "Humedad del suelo a 10 cm (m³/m³)",
-    "SWC_3_1_1_mean": "Humedad del suelo a 20 cm (m³/m³)",
-    "TS_1_1_1_mean": "Temperatura del suelo a 5 cm (°C)",
-    "TS_2_1_1_mean": "Temperatura del suelo a 10 cm (°C)",
-    "TS_3_1_1_mean": "Temperatura del suelo a 20 cm (°C)",
-    "SHF_1_1_1_mean": "Flujo de calor del suelo a 5 cm (W/m²)",
-    "SHF_2_1_1_mean": "Flujo de calor del suelo a 10 cm (W/m²)",
-    "SHF_3_1_1_mean": "Flujo de calor del suelo a 20 cm (W/m²)",
+    "SWC_1_1_1_mean": "Humedad del suelo 1 (m³/m³)",
+    "SWC_2_1_1_mean": "Humedad del suelo 2 (m³/m³)",
+    "SWC_3_1_1_mean": "Humedad del suelo 3 (m³/m³)",
+    "TS_1_1_1_mean": "Temperatura del suelo 1 (°C)",
+    "TS_2_1_1_mean": "Temperatura del suelo 2 (°C)",
+    "TS_3_1_1_mean": "Temperatura del suelo 3 (°C)",
+    "SHF_1_1_1_mean": "Flujo de calor del suelo 1 (W/m²)",
+    "SHF_2_1_1_mean": "Flujo de calor del suelo 2 (W/m²)",
+    "SHF_3_1_1_mean": "Flujo de calor del suelo 3 (W/m²)",
 }
 
 st.subheader(f"Visualización de variables sin valores atípicos Año {año_seleccionado}")
@@ -296,6 +298,7 @@ if año_seleccionado == 2023 and 'January' in meses_ordenados:
     meses_ordenados.remove('January')
 mes_seleccionado = st.selectbox("Seleccione el mesprueba:", meses_ordenados)
 
+
 # 6. Filtrar por mes
 mes_df = df_grouped[df_grouped['mes'] == mes_seleccionado]
 
@@ -358,12 +361,14 @@ st.plotly_chart(fig, use_container_width=True)
 st.subheader(f'Análisis Mensual de Precipitación Acumulada - Año {año_seleccionado}')
 
 # 1. Preparar los datos
-df = df_resumen_diario.copy()
+df = df_means_sin_outliers.copy()
 df.index = pd.to_datetime(df.index)  # Convertir el índice a datetime
 
 # Extraer componentes de fecha
 df['mes'] = df.index.month
 df['mes_nombre'] = df.index.month_name()
+if año_seleccionado == 2023:
+    df = df[df['mes'] >= 3]
 
 # 2. Crear el boxplot mensual
 fig = px.box(df, 
@@ -385,3 +390,25 @@ fig.update_layout(
 
 # 3. Mostrar el gráfico
 st.plotly_chart(fig, use_container_width=True)
+
+############################################
+# Limpieza: eliminar nulos en target
+
+
+if st.button('Modelar Flujo de CO₂'):
+    # modelado con machine learning
+    df_clean = df_means_sin_outliers.dropna(subset=['co2_flux_mean'])
+
+    reg_trans = setup(data=df_clean, target='co2_flux_mean', train_size=0.80,
+                      remove_multicollinearity=True, multicollinearity_threshold=0.95,
+                      normalize=True, normalize_method='minmax',
+                      remove_outliers=True)
+
+    best_trans = compare_models()
+
+    # Mostrar el mejor modelo
+    st.subheader('Mejores modelos encontrados:')
+    st.write(best_trans)
+
+    importance_df = pull()  # Esta es la importancia de los modelos
+    st.dataframe(importance_df)
