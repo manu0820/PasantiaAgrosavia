@@ -4,9 +4,7 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 import calendar
-#Pycaret is used to automatomate machine learning workflow
-from pycaret.regression import *
-from pycaret.utils import version
+
 ##########################
 año_seleccionado = st.selectbox("Selecciona el año:", [2023, 2024])
 
@@ -392,23 +390,4 @@ fig.update_layout(
 st.plotly_chart(fig, use_container_width=True)
 
 ############################################
-# Limpieza: eliminar nulos en target
 
-
-if st.button('Modelar Flujo de CO₂'):
-    # modelado con machine learning
-    df_clean = df_means_sin_outliers.dropna(subset=['co2_flux_mean'])
-
-    reg_trans = setup(data=df_clean, target='co2_flux_mean', train_size=0.80,
-                      remove_multicollinearity=True, multicollinearity_threshold=0.95,
-                      normalize=True, normalize_method='minmax',
-                      remove_outliers=True)
-
-    best_trans = compare_models()
-
-    # Mostrar el mejor modelo
-    st.subheader('Mejores modelos encontrados:')
-    st.write(best_trans)
-
-    importance_df = pull()  # Esta es la importancia de los modelos
-    st.dataframe(importance_df)
